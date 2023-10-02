@@ -15,10 +15,29 @@ import { Observable } from 'rxjs';
 //   someObservable$.subscribe(value => console.log("subscription 2 exec ",value));
 // }, 1000)
 
-const observable$ = new Observable(subscriber => {
+const observable$ = new Observable<string>(subscriber => {
   console.log('Observable executed!');
+  subscriber.next("Alpha");
+  subscriber.next("Bravo");
+  setTimeout(() => {
+    subscriber.next("Charlie");
+    subscriber.next("Delta");
+    // subscriber.complete();
+  }, 2000);
+
+  setTimeout(() => {
+    subscriber.error(new Error('Failure'))
+  }, 4000);
+
+  return () => {
+    console.log("Teardown");
+  }
 });
 
 console.log("Before subscribe!");
-observable$.subscribe()
+observable$.subscribe({
+  next: value => {console.log("observable$.subscribe next 1", value)},
+  error: err => {console.error("observable$.subscribe error 1", err.message)},
+  complete : () => { console.log("observable$.subscribe complete 1")}
+})
 console.log("After subscribe!");
