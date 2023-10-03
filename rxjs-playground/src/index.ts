@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 //
 // const someObservable$ = new Observable<string>(subscriber => {
 //   subscriber.next('Alice');
@@ -42,24 +42,50 @@ import { Observable } from 'rxjs';
 // })
 // console.log("After subscribe!");
 
+//
+// const interval$ = new Observable<number>(subscriber => {
+//   let count = 1;
+//
+//   const interval = setInterval(() => {
+//     console.log("emmit", count);
+//     subscriber.next(count++);
+//   }, 2000)
+//
+//   return () => {
+//     clearInterval(interval);
+//     console.log("Teardown!")
+//   }
+// })
+//
+// const subscription = interval$.subscribe(value => {console.log(value)});
+//
+// setTimeout(() => {
+//   console.log("unsubscribe!");
+//   subscription.unsubscribe();
+// }, 7000)
 
-const interval$ = new Observable<number>(subscriber => {
-  let count = 1;
 
-  const interval = setInterval(() => {
-    console.log("emmit", count);
-    subscriber.next(count++);
-  }, 2000)
+import { fromEvent, interval, merge } from 'rxjs';
+import { map, filter, catchError, mergeMap, scan } from 'rxjs/operators';
 
-  return () => {
-    clearInterval(interval);
-    console.log("Teardown!")
-  }
-})
+// Simulated IoT data streams
+const device1Stream = interval(1000).pipe(map(() => Math.random() * 100));
+const device2Stream = interval(1500).pipe(map(() => Math.random() * 50));
 
-const subscription = interval$.subscribe(value => {console.log(value)});
+// Merge data streams from multiple devices
+const mergedStream = merge(device1Stream, device2Stream);
 
-setTimeout(() => {
-  console.log("unsubscribe!");
-  subscription.unsubscribe();
-}, 7000)
+// Calculate and display average data value in real-time
+mergedStream
+    .pipe(
+        catchError((err) => {
+          console.error('Error:', err);
+          return err; // Continue with the error
+        }),
+        scan((acc, val: number) => ({ sum: acc.sum + val, count: acc.count + 1 }), { sum: 0, count: 0 }),
+        map((avg) => avg.sum / avg.count)
+    )
+    .subscribe((average) => {
+      console.log('Real-time Average:', average);
+      // Update the dashboard UI with the average value
+    });
