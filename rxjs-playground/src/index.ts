@@ -90,36 +90,52 @@
 //       // Update the dashboard UI with the average value
 //     });
 
-import { Observable, of } from "rxjs";
+// import { Observable, of } from "rxjs";
+//
+// of('Alpha', 'Bravo', 'Charlie', 'Delta').subscribe({
+//     next: value => console.log("of subscribe value", value),
+//     complete: () => console.log(" of Complete!")
+// })
+//
+// ourOwnOf('Alpha', 'Bravo', 'Charlie', 'Delta').subscribe({
+//     next: value => console.log("ourOwnOf subscribe value", value),
+//     complete: () => console.log("ourOwnOf Complete!")
+// })
+//
+// const name$ = new Observable<string>(subscriber => {
+//     subscriber.next('Alpha');
+//     subscriber.next('Bravo');
+//     subscriber.next('Charlie');
+//     subscriber.next('Delta');
+//     subscriber.complete();
+// });
+//
+// name$.subscribe({
+//     next: value => console.log("subscribe value", value),
+//     complete: () => console.log("Subscribe Complete!")
+// })
+//
+// function ourOwnOf(...args: string[]): Observable<string> {
+//     return new Observable<string>(subscriber => {
+//         for (let i = 0; i < args.length; i++) {
+//             subscriber.next(args[i])
+//         }
+//         subscriber.complete()
+//     })
+// }
 
-of('Alpha', 'Bravo', 'Charlie', 'Delta').subscribe({
-    next: value => console.log("of subscribe value", value),
-    complete: () => console.log(" of Complete!")
-})
+import {from, Observable} from "rxjs";
 
-ourOwnOf('Alpha', 'Bravo', 'Charlie', 'Delta').subscribe({
-    next: value => console.log("ourOwnOf subscribe value", value),
-    complete: () => console.log("ourOwnOf Complete!")
-})
-
-const name$ = new Observable<string>(subscriber => {
-    subscriber.next('Alpha');
-    subscriber.next('Bravo');
-    subscriber.next('Charlie');
-    subscriber.next('Delta');
-    subscriber.complete();
+const somePromise = new Promise((resolve, reject) => {
+    resolve('Resolve');
+    // reject('Recject');
 });
 
-name$.subscribe({
-    next: value => console.log("subscribe value", value),
-    complete: () => console.log("Subscribe Complete!")
+const observableFromPromise$ = from(somePromise);
+
+observableFromPromise$.subscribe({
+    next: value => console.log("next value", value),
+    error: err => console.log("Error", err),
+    complete: () => console.log("Complete!")
 })
 
-function ourOwnOf(...args: string[]): Observable<string> {
-    return new Observable<string>(subscriber => {
-        for (let i = 0; i < args.length; i++) {
-            subscriber.next(args[i])
-        }
-        subscriber.complete()
-    })
-}
